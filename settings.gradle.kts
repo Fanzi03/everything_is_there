@@ -11,4 +11,3 @@ plugins {
 }
 
 rootProject.name = "everything_is_there"
-include("app")

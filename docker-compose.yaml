@@ -1,0 +1,49 @@
+services: 
+  app: 
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: app
+    networks:
+      - default
+    container_name: app
+    ports: 
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    environment:
+      - DATASOURCE_URL=${DATASOURCE_URL}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD} 
+      - SERVER_PORT=${SERVER_PORT}
+      - DB_PORT=${DB_PORT}
+      #-JAVA_OPTS=${JAVA_OPTS}
+    depends_on:
+      db:
+        condition: service_healthy 
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${SERVER_PORT}/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+  db:
+    image: postgres:17-alpine
+    networks:
+      - default
+    container_name: ${DB_NAME}
+    environment: 
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER:-user}"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+volumes:
+  db_data:
