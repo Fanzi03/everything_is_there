@@ -15,10 +15,11 @@ repositories {
 dependencies {
 
 	//Spring
-	implementation("org.springframework.boot:spring-boot-starter:$springVersion")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springVersion")
-	implementation("org.springframework.boot:spring-boot-starter-web:$springVersion")
-	testImplementation("org.springframework.boot:spring-boot-testcontainers:$springVersion")
+	implementation("org.springframework.boot:spring-boot-starter")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	testImplementation("org.springframework.boot:spring-boot-testcontainers")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
 	//optimization
 	compileOnly("org.projectlombok:lombok:$lombokVersion")
