@@ -13,4 +13,12 @@ spring:
         naming:
           physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  web:
+    resources:
+      static-locations: 
+        - classpath:/static/
+      cache:
+        period: 0
 server: ${SERVER_PORT}
+
