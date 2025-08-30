@@ -26,6 +26,7 @@ public class Item {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "id")
 	UUID id;
 
 	@Column(name = "name", nullable = false)

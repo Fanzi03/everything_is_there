@@ -29,10 +29,13 @@ dependencies {
 
 	//DB
 	implementation("org.postgresql:postgresql:42.7.7")
+	implementation("org.liquibase:liquibase-core:4.33.0")
 	testImplementation("org.testcontainers:postgresql:$testcontainersVersion")
 
 	//test
+	testImplementation("org.testng:testng:7.11.0")
 	testImplementation(libs.junit.jupiter)
+	testImplementation("io.rest-assured:rest-assured:5.5.6")
 	testImplementation("org.testcontainers:junit-jupiter:$testcontainersVersion")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")

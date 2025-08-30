@@ -1,8 +1,5 @@
-package org.application.db;
+package org.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -11,14 +8,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 @SpringBootTest
-public class PostgresTest {
+public abstract class BaseIntegrationTest {
 
 	@Container
 	@ServiceConnection
-	static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:17");
-	
-	@Test void postgresContainerIsRunningAndServiceConnectedTest(){
-		assertThat(postgresContainer.isRunning()).isTrue();
-	}
-	
+	protected static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:17");
 }
