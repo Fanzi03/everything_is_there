@@ -4,6 +4,7 @@ package org.application.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,6 +19,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 public class ItemServiceTest {
@@ -57,6 +62,22 @@ public class ItemServiceTest {
 	}
 
 	@Test
+	void getAll(){
+		item.setName("test");
+		itemService.save(item);
+
+		Pageable pageable = PageRequest.of(0, 10);
+		Page<Item> mockPage = new PageImpl<>(List.of(item), pageable, 1);
+
+		when(itemRepository.findAll(pageable)).thenReturn(mockPage);
+
+		Page<Item> result = itemService.getAll(pageable);
+
+		assertEquals(1, result.getTotalElements());
+		assertEquals("test", result.getContent().get(0).getName());
+	}
+
+	@Test
 	void updateTest(){
 		when(itemRepository.findById(uuid)).thenReturn(Optional.empty());
 		assertThrows(NoSuchElementException.class, () -> itemService.update(item, uuid));
@@ -84,4 +105,5 @@ public class ItemServiceTest {
 		when(itemRepository.findById(uuid)).thenReturn(Optional.empty());
 		assertThrows(NoSuchElementException.class, () -> itemService.delete(uuid));
 	}
+
 }

@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import io.restassured.RestAssured;
@@ -18,6 +21,7 @@ import io.restassured.http.ContentType;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) 
@@ -60,6 +64,16 @@ public class ItemControllerTest extends BaseIntegrationTest{
 			.and().body("name", equalTo("test item")).body("id", notNullValue());	
 	}
 
+	@Test
+	void whenGetAllRequestTest(){
+		Item itemRequest = itemRepository.save(Item.builder().name("test").build());	
+
+		given().contentType(ContentType.JSON).queryParam("page", 0).queryParam("size", 10)
+			.when().get("/items").then().statusCode(200)
+			.body("content", notNullValue())
+			.body("content.size()",greaterThanOrEqualTo(0))
+			.body("content[0].name", equalTo(itemRequest.getName()));
+	}
 
 	@Test
 	void whenPutRequetsTest(){

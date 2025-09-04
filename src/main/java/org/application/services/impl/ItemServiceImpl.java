@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.application.entity.Item;
 import org.application.repositories.ItemRepository;
 import org.application.services.ItemService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import lombok.AccessLevel;
@@ -19,6 +21,10 @@ public class ItemServiceImpl implements ItemService{
 
 	ItemRepository itemRepository;
 
+	@Override
+	public Page<Item> getAll(Pageable page){
+		return itemRepository.findAll(page);
+	}
 	@Override
 	public Item save(Item item){
 		return itemRepository.save(item);
@@ -44,4 +50,5 @@ public class ItemServiceImpl implements ItemService{
 		findById(id);
 		itemRepository.deleteById(id);
 	}
+
 }

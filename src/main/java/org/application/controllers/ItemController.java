@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import org.application.entity.Item;
 import org.application.services.ItemService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AccessLevel;
@@ -34,6 +37,14 @@ public class ItemController {
 	@GetMapping("/{id}")
 	public ResponseEntity<Item> findById(@PathVariable("id") UUID id){
 		return ResponseEntity.ok(itemService.findById(id));
+	}
+
+	@GetMapping
+	public ResponseEntity<Page<Item>> getAll(
+		@RequestParam(value = "page", defaultValue = "0") int page,
+		@RequestParam(value = "size", defaultValue = "10") int size
+	){
+		return ResponseEntity.ok(itemService.getAll(PageRequest.of(page, size)));
 	}
 
 	@PutMapping("/{id}")
