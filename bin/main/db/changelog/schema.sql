@@ -1,5 +1,3 @@
--- db/changelog/schema.sql
-
 -- liquibase formatted sql
 
 -- changeset fanzi03:create-items-table
