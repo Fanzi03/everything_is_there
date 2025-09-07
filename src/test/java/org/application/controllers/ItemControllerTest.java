@@ -1,7 +1,5 @@
 package org.application.controllers;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.application.BaseIntegrationTest;
 import org.application.entity.Item;
 import org.application.repositories.ItemRepository;
@@ -10,10 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;

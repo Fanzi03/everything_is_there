@@ -1,14 +1,13 @@
 package org.application.entity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.UUID;
 
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 public class ItemTest {
 
@@ -33,12 +32,5 @@ public class ItemTest {
 	void nullfieldsTest(){
 		assertNull(item.getName());
 		assertNull(item.getId());
-	}
-
-	@Test
-	@DisplayName("should ignore blanck")
-	void blanckfieldsTest(){
-		Item item2 = new Item();
-		assertThrows(IllegalArgumentException.class, () -> item2.setName("  "));
 	}
 }

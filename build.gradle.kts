@@ -6,6 +6,7 @@ plugins {
 	id("org.springframework.boot") version "3.5.4"
 	id("io.spring.dependency-management") version "1.1.7"
 	application
+	id("info.solidsoft.pitest") version "1.19.0-rc.1"
 }
 
 repositories {
@@ -18,6 +19,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
@@ -30,11 +32,10 @@ dependencies {
 	//DB
 	implementation("org.postgresql:postgresql:42.7.7")
 	implementation("org.liquibase:liquibase-core:4.33.0")
+	testImplementation("com.arcmutate:arcmutate-spring:1.1.1")
 	testImplementation("org.testcontainers:postgresql:$testcontainersVersion")
 
 	//test
-	testImplementation("org.testng:testng:7.11.0")
-	testImplementation(libs.junit.jupiter)
 	testImplementation("io.rest-assured:rest-assured:5.5.6")
 	testImplementation("org.testcontainers:junit-jupiter:$testcontainersVersion")
 
@@ -66,3 +67,30 @@ tasks.bootJar {
 tasks.named<Test>("test") {
 	useJUnitPlatform()
 }
+
+
+pitest {
+	    junit5PluginVersion.set("1.2.3")
+	    targetClasses.set(listOf("org.application.*"))
+	    excludedClasses.set(listOf(
+		"org.application.App*",
+		"org.application.config.*",
+		"org.application.entity.*",
+		"org.application.**.*Exception",
+		"org.application.**.*DataTransferObject*"
+	    ))
+
+	    excludedTestClasses.set(listOf(
+		"**.*IntegrationTest*",
+		"**/BaseIntegrationTest*"
+	    ))
+
+	    threads.set(4) 
+
+	    mutationThreshold.set(60)
+	    coverageThreshold.set(80)
+	    outputFormats.set(listOf("XML", "HTML"))
+	    timestampedReports.set(false)
+
+}
+
