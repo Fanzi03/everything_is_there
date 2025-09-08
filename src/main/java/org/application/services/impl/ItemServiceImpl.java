@@ -1,6 +1,7 @@
 package org.application.services.impl;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.application.entity.Item;
@@ -38,11 +39,19 @@ public class ItemServiceImpl implements ItemService{
 	@Override
 	public Item update (Item item, UUID id){
 		Item foundItem = findById(id);
-		if(!(item.getName().equals(foundItem.getName()))){
-			return save(item);
+		boolean hasChanged = false;
+
+		if(!Objects.equals(foundItem.getPrimaryTag(), item.getPrimaryTag())){
+			foundItem.setPrimaryTag(item.getPrimaryTag());
+			hasChanged = true;
 		}
 
-		return foundItem;
+		if(!Objects.equals(item.getName(),foundItem.getName())){
+			foundItem.setName(item.getName());
+			hasChanged = true;
+		}
+
+		return hasChanged ? save(foundItem) : foundItem;
 	}
 
 	@Override

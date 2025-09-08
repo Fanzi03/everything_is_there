@@ -1,9 +1,11 @@
 package org.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.application.enums.ItemTag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,10 +22,12 @@ public class ItemDataTransferObjectTest {
 	}
 
 	@Test
+	@DisplayName("testField")
 	void testField(){
-		itemDto = ItemDataTransferObject.builder().name("test").id(UUID.randomUUID()).build();
+		itemDto = ItemDataTransferObject.builder().primaryTag(ItemTag.NEW.toString()).name("test").id(UUID.randomUUID()).build();
 
 		assertThat("test").isEqualTo(itemDto.getName());
 		assertThat(itemDto.getId()).isNotNull();		
+		assertThat(itemDto.getPrimaryTag()).isEqualTo(ItemTag.NEW.toString());
 	}
 }

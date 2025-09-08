@@ -89,10 +89,11 @@ public class ItemServiceTest {
 		Item updatedItem = new Item();
 		updatedItem.setName("new item");
 
-		when(itemRepository.save(updatedItem)).thenReturn(updatedItem);
+		when(itemRepository.save(any(Item.class))).thenReturn(item);
 		Item result = itemService.update(updatedItem, uuid);
 		assertEquals(updatedItem.getName(), result.getName());
-	}
+
+		}
 
 
 	@Test

@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.application.entity.Item;
+import org.application.enums.ItemTag;
 import org.application.mapping.impl.ItemMapperImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,10 +40,11 @@ public class ItemMapperTest {
 		@Test
 		@DisplayName("mapAllFieldsAndIgnoreId")
 		void shouldMapAllField(){
-			itemDto = ItemDataTransferObject.builder().name("test").id(id).build();
+			itemDto = ItemDataTransferObject.builder().primaryTag(ItemTag.NEW.toString()).name("test").id(id).build();
 
 			item = itemMapper.toEntity(itemDto);
 
+			assertThat(item.getPrimaryTag().toString()).isEqualTo(itemDto.getPrimaryTag());
 			assertThat(itemDto.getName()).isEqualTo(item.getName());
 			assertThat(item.getId()).isNotEqualTo(item.getName());
 		}
@@ -64,10 +66,11 @@ public class ItemMapperTest {
 		@DisplayName("mapAllFields")
 		void toDto(){
 
-			item = Item.builder().id(id).name("test").build();
+			item = Item.builder().primaryTag(ItemTag.NEW).id(id).name("test").build();
 
 			itemDto = itemMapper.toDto(item);
 
+			assertThat(itemDto.getPrimaryTag()).isEqualTo(item.getPrimaryTag().toString());
 			assertThat(itemDto.getName()).isEqualTo(item.getName());
 			assertThat(itemDto.getId()).isEqualTo(item.getId());
 		}

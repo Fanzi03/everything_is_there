@@ -19,6 +19,8 @@ spring:
           physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+  main:
+    lazy-initialialization: true
   web:
     resources:
       static-locations: 
