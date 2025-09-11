@@ -1,5 +1,7 @@
 package org.application.mapping;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
@@ -28,4 +30,8 @@ public class ItemDataTransferObject {
 
 	@Size(min = 3, max = 55, message = "tag must be normal (3-55)")
 	String primaryTag;
+
+	@Builder.Default
+	List<String> tags = new ArrayList<>();
+
 }

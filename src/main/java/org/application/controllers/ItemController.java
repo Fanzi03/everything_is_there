@@ -2,6 +2,7 @@ package org.application.controllers;
 
 import java.util.UUID;
 
+import org.application.enums.ItemTag;
 import org.application.mapping.ItemDataTransferObject;
 import org.application.mapping.ItemMapper;
 import org.application.services.ItemService;
@@ -40,6 +41,19 @@ public class ItemController {
 	@GetMapping("/{id}")
 	public ResponseEntity<ItemDataTransferObject> findById(@PathVariable("id") UUID id){
 		return ResponseEntity.ok(itemMapper.toDto(itemService.findById(id)));
+	}
+
+	@GetMapping("/tag/{primary_tag}")
+	public ResponseEntity<Page<ItemDataTransferObject>> findAllByPrimaryTag(
+		@PathVariable("primary_tag") String primary_tag,
+		@RequestParam(value = "page", defaultValue = "0") int page,
+		@RequestParam(value = "size", defaultValue = "10") int size
+	){
+		return ResponseEntity.ok(
+			itemService.findAllByPrimaryTag(
+				ItemTag.fromString(primary_tag), PageRequest.of(page, size)
+			).map(itemMapper::toDto)
+		);
 	}
 
 	@GetMapping

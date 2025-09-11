@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import org.application.entity.Item;
+import org.application.enums.ItemTag;
 import org.application.repositories.ItemRepository;
 import org.application.services.ItemService;
 import org.springframework.data.domain.Page;
@@ -22,21 +23,22 @@ public class ItemServiceImpl implements ItemService{
 
 	ItemRepository itemRepository;
 
-	@Override
 	public Page<Item> getAll(Pageable page){
 		return itemRepository.findAll(page);
 	}
-	@Override
+
 	public Item save(Item item){
 		return itemRepository.save(item);
 	}
 
-	@Override
 	public Item findById(UUID id){
 		return itemRepository.findById(id).orElseThrow(NoSuchElementException::new);
 	}
 
-	@Override
+	public Page<Item> findAllByPrimaryTag(ItemTag primaryTag, Pageable pageable){
+		return itemRepository.findAllByPrimaryTag(primaryTag, pageable);
+	}
+
 	public Item update (Item item, UUID id){
 		Item foundItem = findById(id);
 		boolean hasChanged = false;
@@ -54,7 +56,6 @@ public class ItemServiceImpl implements ItemService{
 		return hasChanged ? save(foundItem) : foundItem;
 	}
 
-	@Override
 	public void delete(UUID id){
 		findById(id);
 		itemRepository.deleteById(id);

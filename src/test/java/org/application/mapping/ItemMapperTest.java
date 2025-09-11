@@ -2,8 +2,12 @@ package org.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.application.entity.Item;
 import org.application.enums.ItemTag;
@@ -24,6 +28,11 @@ public class ItemMapperTest {
 	ItemDataTransferObject itemDto;
 	Item item;
 	UUID id;
+	List<String> tagsD = Arrays.stream(ItemTag.values())
+			.map(ItemTag::toString)
+			.collect(Collectors.toList());
+
+	Set<ItemTag> tagsE = Arrays.stream(ItemTag.values()).collect(Collectors.toSet());
 
 	@BeforeEach
 	void setUp(){
@@ -40,13 +49,23 @@ public class ItemMapperTest {
 		@Test
 		@DisplayName("mapAllFieldsAndIgnoreId")
 		void shouldMapAllField(){
-			itemDto = ItemDataTransferObject.builder().primaryTag(ItemTag.NEW.toString()).name("test").id(id).build();
+
+			itemDto = ItemDataTransferObject.builder()
+				.primaryTag(ItemTag.NEW.toString())
+				.tags(tagsD)
+				.name("test").id(id)
+				.build();
+
+			// check lowercase too
+			itemDto.getTags().add("new");
 
 			item = itemMapper.toEntity(itemDto);
 
 			assertThat(item.getPrimaryTag().toString()).isEqualTo(itemDto.getPrimaryTag());
 			assertThat(itemDto.getName()).isEqualTo(item.getName());
 			assertThat(item.getId()).isNotEqualTo(item.getName());
+
+			assertThat(itemDto.getTags()).containsAll(item.getTags().stream().map(ItemTag::toString).toList());
 		}
 
 		@Test
@@ -66,13 +85,19 @@ public class ItemMapperTest {
 		@DisplayName("mapAllFields")
 		void toDto(){
 
-			item = Item.builder().primaryTag(ItemTag.NEW).id(id).name("test").build();
+			item = Item.builder()
+				.primaryTag(ItemTag.NEW)
+				.id(id).name("test")
+				.tags(tagsE)
+				.build();
 
 			itemDto = itemMapper.toDto(item);
 
 			assertThat(itemDto.getPrimaryTag()).isEqualTo(item.getPrimaryTag().toString());
 			assertThat(itemDto.getName()).isEqualTo(item.getName());
 			assertThat(itemDto.getId()).isEqualTo(item.getId());
+			assertThat(itemDto.getTags().stream().map(s -> ItemTag.fromString(s)).collect(Collectors.toSet()))
+				.containsAll(item.getTags());
 		}
 
 		@Test

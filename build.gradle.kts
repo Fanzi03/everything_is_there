@@ -71,23 +71,20 @@ tasks.named<Test>("test") {
 
 pitest {
 	    junit5PluginVersion.set("1.2.3")
-	    targetClasses.set(listOf("org.application.*"))
+	    targetClasses.set(listOf(
+		    "org.application.*",
+    	    ))
 	    excludedClasses.set(listOf(
 		"org.application.App*",
 		"org.application.config.*",
-		"org.application.entity.*",
-		"org.application.**.*Exception",
-		"org.application.**.*DataTransferObject*"
+//		"org.application.entity.*",
+		"org.application.**.*DataTransferObject*",
+		"org.application.controllers.HomeController*"
 	    ))
 
-	    excludedTestClasses.set(listOf(
-		"**.*IntegrationTest*",
-		"**/BaseIntegrationTest*"
-	    ))
+	    threads.set(5) 
 
-	    threads.set(4) 
-
-	    mutationThreshold.set(60)
+	    mutationThreshold.set(80)
 	    coverageThreshold.set(80)
 	    outputFormats.set(listOf("XML", "HTML"))
 	    timestampedReports.set(false)

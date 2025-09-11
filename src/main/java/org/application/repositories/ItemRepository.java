@@ -3,6 +3,17 @@ package org.application.repositories;
 import java.util.UUID;
 
 import org.application.entity.Item;
+import org.application.enums.ItemTag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-public interface ItemRepository extends JpaRepository<Item, UUID> {}
+public interface ItemRepository extends JpaRepository<Item, UUID> {
+
+	@Query("SELECT i FROM Item i WHERE i.primaryTag = :primaryTag")
+	Page<Item> findAllByPrimaryTag(
+		@Param("primaryTag") ItemTag primaryTag, Pageable pageable
+	);
+}

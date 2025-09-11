@@ -8,13 +8,18 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 import static org.mockito.Mockito.*;
 
 import org.application.entity.Item;
+import org.application.enums.ItemTag;
 import org.application.repositories.ItemRepository;
 import org.application.services.impl.ItemServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -25,6 +30,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
+@Timeout(value = 5, unit = TimeUnit.SECONDS)
 public class ItemServiceTest {
 
 	@Mock
@@ -33,12 +39,13 @@ public class ItemServiceTest {
 	@InjectMocks
 	ItemServiceImpl itemService;
 
-	Item item;
+	Item item, item2;
 	UUID uuid;
 
 	@BeforeEach
 	void setUp(){
 		item = new Item();
+		item2 = new Item();
 		uuid = UUID.randomUUID();
 	}
 
@@ -59,6 +66,26 @@ public class ItemServiceTest {
 		item.setId(uuid);
 		when(itemRepository.findById(uuid)).thenReturn(Optional.of(item));
 		assertEquals(item, itemService.findById(uuid));
+	}
+
+	@Test
+	@DisplayName("should return only with POPULAR tag")
+	void findAllByPrimaryTag(){
+		ItemTag needTag = ItemTag.POPULAR;
+
+		item.setPrimaryTag(needTag);	
+		item2.setPrimaryTag(ItemTag.NEW);
+
+
+		Pageable pageable = PageRequest.of(0, 10);
+		Page<Item> mockPage = new PageImpl<>(List.of(item), pageable, 1);
+
+		when(itemRepository.findAllByPrimaryTag(needTag, pageable)).thenReturn(mockPage);
+
+		Page<Item> result = itemService.findAllByPrimaryTag(needTag,pageable);
+
+		assertEquals(1, result.getTotalElements());
+		assertEquals("POPULAR", result.getContent().get(0).getPrimaryTag().toString());
 	}
 
 	@Test
@@ -93,7 +120,7 @@ public class ItemServiceTest {
 		Item result = itemService.update(updatedItem, uuid);
 		assertEquals(updatedItem.getName(), result.getName());
 
-		}
+	}
 
 
 	@Test

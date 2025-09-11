@@ -2,6 +2,7 @@ package org.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -24,10 +25,17 @@ public class ItemDataTransferObjectTest {
 	@Test
 	@DisplayName("testField")
 	void testField(){
-		itemDto = ItemDataTransferObject.builder().primaryTag(ItemTag.NEW.toString()).name("test").id(UUID.randomUUID()).build();
+		List<String> tags = List.of(ItemTag.NEW.toString(), ItemTag.SALE.toString());
+
+		itemDto = ItemDataTransferObject.builder().primaryTag(ItemTag.NEW.toString()).name("test").id(UUID.randomUUID())
+			.tags(tags)
+			.build();
 
 		assertThat("test").isEqualTo(itemDto.getName());
 		assertThat(itemDto.getId()).isNotNull();		
 		assertThat(itemDto.getPrimaryTag()).isEqualTo(ItemTag.NEW.toString());
+		assertThat(itemDto.getTags()).containsAll(tags);
 	}
+
+
 }

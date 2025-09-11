@@ -6,6 +6,7 @@ import org.application.enums.ItemTag;
 import org.application.mapping.ItemDataTransferObject;
 import org.application.mapping.impl.ItemMapperImpl;
 import org.application.repositories.ItemRepository;
+import org.application.services.impl.ItemServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -25,7 +26,10 @@ import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) 
@@ -38,6 +42,9 @@ public class ItemControllerTest extends BaseIntegrationTest{
 
 	@Autowired
 	ItemMapperImpl itemMapper;
+
+	@Autowired 
+	ItemServiceImpl itemService;
 
 	@LocalServerPort
 	Integer port;
@@ -79,6 +86,30 @@ public class ItemControllerTest extends BaseIntegrationTest{
 			.body("name", equalTo("test item"))
 			.body("id", notNullValue())	
 			.body("primaryTag", equalTo("POPULAR"));	
+
+		// test the wrong id
+		when().get("/items/" + UUID.randomUUID()).then().log().all()
+			.statusCode(404);
+	}
+
+	@Test
+	void whenGetAllByPrimaryTag(){
+		// two times for add data
+		createItemDto();
+		createItemDto();
+
+		//different tag
+		itemRepository.save(Item.builder().primaryTag(ItemTag.NEW).name("test").build());
+
+		given().contentType(ContentType.JSON).queryParam("page", 0).queryParam("size", 10)
+			.when().get("/items/tag/" + ItemTag.POPULAR.toString()).then().statusCode(200)
+			.body("content", notNullValue())
+			.body("content.size()", equalTo(2))
+			.body("content[0].primaryTag", equalTo("POPULAR"));
+
+		//test the wrong tag
+		given().contentType(ContentType.JSON).queryParam("page", 0).queryParam("size", 10)
+			.when().get("/items/tag/" + "unknown tag").then().statusCode(400);
 	}
 
 	@Test
@@ -136,6 +167,10 @@ public class ItemControllerTest extends BaseIntegrationTest{
 		);	
 
 		when().delete("/items/" + savedItem.getId()).then().statusCode(204);
+
+		assertThrows(NoSuchElementException.class, 
+			() -> itemService.findById(savedItem.getId())
+		);
 	}
 
 	private ItemDataTransferObject createItemDto(){

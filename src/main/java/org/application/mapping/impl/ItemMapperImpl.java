@@ -1,5 +1,7 @@
 package org.application.mapping.impl;
 
+import java.util.stream.Collectors;
+
 import org.application.entity.Item;
 import org.application.enums.ItemTag;
 import org.application.mapping.ItemDataTransferObject;
@@ -14,6 +16,7 @@ public class ItemMapperImpl implements ItemMapper{
 		return Item.builder()
 			.name(itemDto.getName())
 			.primaryTag(itemDto.getPrimaryTag() != null ? ItemTag.valueOf(itemDto.getPrimaryTag()) : null)
+			.tags(itemDto.getTags().stream().map(s -> ItemTag.fromString(s)).collect(Collectors.toSet()))
 			.build();	
 	}	
 
@@ -22,6 +25,7 @@ public class ItemMapperImpl implements ItemMapper{
 		return ItemDataTransferObject.builder()
 			.primaryTag(item.getPrimaryTag() == null ? null: item.getPrimaryTag().toString())
 			.name(item.getName())
+			.tags(item.getTags().stream().map(ItemTag::toString).collect(Collectors.toList()))
 			.id(item.getId())
 			.build();
 	}

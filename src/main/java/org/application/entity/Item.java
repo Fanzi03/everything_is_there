@@ -1,10 +1,14 @@
 package org.application.entity;
 
+import java.util.Set;
+import java.util.EnumSet;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.application.enums.ItemTag;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -39,5 +43,55 @@ public class Item {
 	@Column(name = "primary_tag")
 	@Enumerated(EnumType.STRING)
 	ItemTag primaryTag;
-	
+
+	@ElementCollection
+	@Enumerated(EnumType.STRING)
+	@Builder.Default
+	Set<ItemTag> tags = EnumSet.noneOf(ItemTag.class);
+
+	public void setPrimaryTag(ItemTag primaryTag){
+		this.primaryTag = primaryTag;
+
+		if(primaryTag != null){
+			this.tags.add(primaryTag);
+		}
+	}
+
+	public void removeTag(ItemTag tag){
+		this.tags.remove(tag);
+
+		if(Objects.equals(this.primaryTag, tag)){
+			primaryTag = null;
+		}
+	}
+
+	public static class ItemBuilder{
+		public ItemBuilder primaryTag(ItemTag primaryTag){
+			this.primaryTag = primaryTag;	
+			
+			if(primaryTag != null){
+				if(!this.tags$set){
+					this.tags$value = EnumSet.noneOf(ItemTag.class);
+					this.tags$set = true;
+				}
+				this.tags$value.add(primaryTag);
+			}
+
+			return this;
+		}
+
+		public ItemBuilder tags(Set<ItemTag> tags){
+			this.tags$value = tags;
+			this.tags$set = true;
+
+			if(this.primaryTag != null && tags != null){
+				tags.add(this.primaryTag);
+			}
+
+			return this;
+		}
+
+		
+	}
+
 }
