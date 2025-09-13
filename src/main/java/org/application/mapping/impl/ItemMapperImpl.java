@@ -17,6 +17,7 @@ public class ItemMapperImpl implements ItemMapper{
 			.name(itemDto.getName())
 			.primaryTag(itemDto.getPrimaryTag() != null ? ItemTag.valueOf(itemDto.getPrimaryTag()) : null)
 			.tags(itemDto.getTags().stream().map(s -> ItemTag.fromString(s)).collect(Collectors.toSet()))
+			.description(itemDto.getDescription())
 			.build();	
 	}	
 
@@ -27,6 +28,7 @@ public class ItemMapperImpl implements ItemMapper{
 			.name(item.getName())
 			.tags(item.getTags().stream().map(ItemTag::toString).collect(Collectors.toList()))
 			.id(item.getId())
+			.description(item.getDescription())
 			.build();
 	}
 }

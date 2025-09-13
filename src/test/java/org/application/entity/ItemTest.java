@@ -31,10 +31,11 @@ public class ItemTest {
 	@Test
 	@DisplayName("should create item with builder from lombok")
 	void builderfieldsTest(){
-		item = Item.builder().name("first item").primaryTag(ItemTag.NEW).id(id).build();
+		item = Item.builder().name("first item").primaryTag(ItemTag.NEW).id(id).description("this is world").build();
 		assertEquals("first item", item.getName());
 		assertEquals(id, item.getId());
 		assertEquals(item.getPrimaryTag(), ItemTag.NEW);
+		assertThat(item.getDescription()).isEqualTo("this is world");
 	}
 
 	@Test
@@ -43,6 +44,7 @@ public class ItemTest {
 		assertNull(item.getName());
 		assertNull(item.getId());
 		assertNull(item.getPrimaryTag());
+		assertNull(item.getDescription());
 		// check type
 		assertThat(item.getTags()).isEqualTo(EnumSet.noneOf(ItemTag.class));
 
@@ -78,7 +80,7 @@ public class ItemTest {
 
 		assertNull(item.getPrimaryTag());
 
-		Item itemWithBuild = Item.builder().name("test").primaryTag(tag).build();
+		Item itemWithBuild = Item.builder().name("test").primaryTag(tag).build().setId(id);;
 
 		itemWithBuild.removeTag(tag);
 		assertNull(itemWithBuild.getPrimaryTag());

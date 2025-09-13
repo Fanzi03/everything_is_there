@@ -54,6 +54,7 @@ public class ItemMapperTest {
 				.primaryTag(ItemTag.NEW.toString())
 				.tags(tagsD)
 				.name("test").id(id)
+				.description("1")
 				.build();
 
 			// check lowercase too
@@ -61,6 +62,7 @@ public class ItemMapperTest {
 
 			item = itemMapper.toEntity(itemDto);
 
+			assertThat(item.getDescription()).isEqualTo(itemDto.getDescription());
 			assertThat(item.getPrimaryTag().toString()).isEqualTo(itemDto.getPrimaryTag());
 			assertThat(itemDto.getName()).isEqualTo(item.getName());
 			assertThat(item.getId()).isNotEqualTo(item.getName());
@@ -89,6 +91,7 @@ public class ItemMapperTest {
 				.primaryTag(ItemTag.NEW)
 				.id(id).name("test")
 				.tags(tagsE)
+				.description("1c")
 				.build();
 
 			itemDto = itemMapper.toDto(item);
@@ -98,6 +101,7 @@ public class ItemMapperTest {
 			assertThat(itemDto.getId()).isEqualTo(item.getId());
 			assertThat(itemDto.getTags().stream().map(s -> ItemTag.fromString(s)).collect(Collectors.toSet()))
 				.containsAll(item.getTags());
+			assertThat(itemDto.getDescription()).isEqualTo(item.getDescription());
 		}
 
 		@Test

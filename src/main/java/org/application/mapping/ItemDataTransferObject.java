@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 
 @NoArgsConstructor
@@ -21,6 +22,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @Builder
+@Accessors(chain = true)
 public class ItemDataTransferObject {
 	
 	UUID id;
@@ -31,6 +33,9 @@ public class ItemDataTransferObject {
 
 	@Size(min = 3, max = 55, message = "tag must be normal (3-55)")
 	String primaryTag;
+
+	@Size(max = 150, message = "description must be less 150")
+	String description;
 
 	@Builder.Default
 	List<String> tags = new ArrayList<>();

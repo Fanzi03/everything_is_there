@@ -32,12 +32,14 @@ public class ItemDataTransferObjectTest {
 
 		itemDto = ItemDataTransferObject.builder().primaryTag(ItemTag.NEW.toString()).name("test").id(UUID.randomUUID())
 			.tags(tags)
+			.description("cool")
 			.build();
 
 		assertThat("test").isEqualTo(itemDto.getName());
 		assertThat(itemDto.getId()).isNotNull();		
 		assertThat(itemDto.getPrimaryTag()).isEqualTo(ItemTag.NEW.toString());
 		assertThat(itemDto.getTags()).containsAll(tags);
+		assertThat(itemDto.getDescription()).isEqualTo("cool");
 
 	}
 

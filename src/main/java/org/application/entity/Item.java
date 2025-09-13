@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 
 @Data
@@ -29,6 +30,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "items")
+@Accessors(chain = true) 
 public class Item {
 
 	@Id
@@ -38,6 +40,9 @@ public class Item {
 
 	@Column(name = "name", nullable = false)
 	String name;
+
+	@Column(name = "description")
+	String description;
 
 	@Column(name = "primary_tag")
 	@Enumerated(EnumType.STRING)
