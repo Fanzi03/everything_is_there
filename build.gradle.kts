@@ -78,7 +78,7 @@ pitest {
 		"org.application.App*",
 		"org.application.config.*",
 //		"org.application.entity.*",
-		"org.application.**.*DataTransferObject*",
+//		"org.application.**.*DataTransferObject*",
 		"org.application.controllers.HomeController*"
 	    ))
 

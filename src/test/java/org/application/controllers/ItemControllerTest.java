@@ -64,6 +64,7 @@ public class ItemControllerTest extends BaseIntegrationTest{
 		ItemDataTransferObject itemRequest = new ItemDataTransferObject();
 		itemRequest.setName("test item");
 		itemRequest.setPrimaryTag("NEW");
+		
 
 		ItemDataTransferObject actualItem = given().contentType(ContentType.JSON).body(itemRequest)
 		.when().post("/items").then().log().all().statusCode(200).extract().as(ItemDataTransferObject.class);

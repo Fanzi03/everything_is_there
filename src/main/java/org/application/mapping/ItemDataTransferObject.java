@@ -2,6 +2,7 @@ package org.application.mapping;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
@@ -33,5 +34,53 @@ public class ItemDataTransferObject {
 
 	@Builder.Default
 	List<String> tags = new ArrayList<>();
+
+	public void setPrimaryTag(String primaryTag){
+		this.primaryTag = primaryTag;
+
+		if(primaryTag != null){
+			this.tags.add(primaryTag);
+		}
+	}	
+
+	public void removeTag(String tag){
+		this.tags.remove(tag);
+
+		if(Objects.equals(tag, primaryTag)){
+			primaryTag = null;
+		}
+	}
+
+	public static class ItemDataTransferObjectBuilder{
+		public ItemDataTransferObjectBuilder primaryTag(String primaryTag){
+			this.primaryTag = primaryTag;
+
+			if(primaryTag != null){
+				if(!this.tags$set){
+					this.tags$value = new ArrayList<>();
+					this.tags$set = true;
+				}
+				this.tags$value.add(primaryTag);
+			}
+
+			return this;
+		}
+
+		public ItemDataTransferObjectBuilder tags(List<String> tags){
+			if(tags == null){
+				this.tags$value = new ArrayList<>();
+			}else{
+				this.tags$value = new ArrayList<>(tags);
+			}
+
+			if(this.primaryTag != null && !this.tags$value.contains(this.primaryTag)){
+				this.tags$value.add(this.primaryTag);
+			}
+
+			this.tags$set = true;
+
+			return this;
+		}
+	}
 
 }

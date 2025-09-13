@@ -1,6 +1,6 @@
 package org.application.entity;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -40,13 +40,20 @@ public class ItemTest {
 	@Test
 	@DisplayName("should be null")
 	void nullAndEmptyfieldsTest(){
-	//	item = Item.builder().tags(null).build();
-
 		assertNull(item.getName());
 		assertNull(item.getId());
 		assertNull(item.getPrimaryTag());
+		// check type
 		assertThat(item.getTags()).isEqualTo(EnumSet.noneOf(ItemTag.class));
 
+	}
+
+	@Test
+	@DisplayName("check lombok")
+	void shouldWorkWithBuild(){
+
+		item = Item.builder().primaryTag(ItemTag.NEW).tags(null).build();
+		assertThat(item.getTags()).contains(ItemTag.NEW);
 	}
 
 	@ParameterizedTest
@@ -69,9 +76,9 @@ public class ItemTest {
 		item.setPrimaryTag(tag);
 		item.removeTag(tag);
 
-		Item itemWithBuild = Item.builder().name("test").primaryTag(tag).build();
-
 		assertNull(item.getPrimaryTag());
+
+		Item itemWithBuild = Item.builder().name("test").primaryTag(tag).build();
 
 		itemWithBuild.removeTag(tag);
 		assertNull(itemWithBuild.getPrimaryTag());
