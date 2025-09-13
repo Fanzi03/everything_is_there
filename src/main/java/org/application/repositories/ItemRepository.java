@@ -16,4 +16,9 @@ public interface ItemRepository extends JpaRepository<Item, UUID> {
 	Page<Item> findAllByPrimaryTag(
 		@Param("primaryTag") ItemTag primaryTag, Pageable pageable
 	);
+
+	@Query("SELECT i FROM Item i WHERE LOWER(i.description) LIKE LOWER(CONCAT('%', :description, '%'))")
+	Page<Item> findAllByDescription(
+		@Param("description") String description, Pageable pageable
+	);
 }

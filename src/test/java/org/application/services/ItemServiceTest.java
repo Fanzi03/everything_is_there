@@ -1,6 +1,7 @@
 package org.application.services;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -29,6 +30,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import lombok.experimental.ExtensionMethod;
+
+@ExtensionMethod(ItemServiceImpl.class)
 @ExtendWith(MockitoExtension.class)
 @Timeout(value = 5, unit = TimeUnit.SECONDS)
 public class ItemServiceTest {
@@ -86,6 +90,22 @@ public class ItemServiceTest {
 
 		assertEquals(1, result.getTotalElements());
 		assertEquals("POPULAR", result.getContent().get(0).getPrimaryTag().toString());
+	}
+
+	@Test
+	void findAllByDescription(){
+		item.setDescription("hello").setName("nice");
+		Item item2 = new Item().setName("h").setDescription("util");
+
+		Pageable pageable = PageRequest.of(0, 10);
+		Page<Item> mockPage = new PageImpl<>(List.of(item), pageable, 1);	
+
+		when(itemRepository.findAllByDescription("hel", pageable)).thenReturn(mockPage);
+
+		Page<Item> result = itemService.findAllByDescription("hel", pageable);
+		
+		assertThat(result.getTotalElements()).isEqualTo(1);
+		assertThat(result.getContent().getFirst().getDescription()).isEqualTo("hello");
 	}
 
 	@Test

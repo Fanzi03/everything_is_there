@@ -64,7 +64,7 @@ public class ItemControllerTest extends BaseIntegrationTest{
 		ItemDataTransferObject itemRequest = new ItemDataTransferObject();
 		itemRequest.setName("test item");
 		itemRequest.setPrimaryTag("NEW");
-		
+
 
 		ItemDataTransferObject actualItem = given().contentType(ContentType.JSON).body(itemRequest)
 		.when().post("/items").then().log().all().statusCode(200).extract().as(ItemDataTransferObject.class);
@@ -73,58 +73,83 @@ public class ItemControllerTest extends BaseIntegrationTest{
 		assertThat(actualItem.getPrimaryTag()).isEqualTo(itemRequest.getPrimaryTag());
 	}
 
-	@Test
-	void whenGetRequestTest(){
-		Item itemRequest = new Item();
-		itemRequest.setName("test item");
-		itemRequest.setPrimaryTag(ItemTag.POPULAR);
+	@Nested
+	@DisplayName("GET")
+	class GetTest{
+		@Test
+		void whenGetRequestTest(){
+			Item itemRequest = new Item();
+			itemRequest.setName("test item");
+			itemRequest.setPrimaryTag(ItemTag.POPULAR);
 
-		Item savedItem = itemRepository.save(itemRequest);	
-		when().get("/items/" + savedItem.getId())
-			.then().log().all()
-			.statusCode(200)
-			.and()
-			.body("name", equalTo("test item"))
-			.body("id", notNullValue())	
-			.body("primaryTag", equalTo("POPULAR"));	
+			Item savedItem = itemRepository.save(itemRequest);	
+			when().get("/items/" + savedItem.getId())
+				.then().log().all()
+				.statusCode(200)
+				.and()
+				.body("name", equalTo("test item"))
+				.body("id", notNullValue())	
+				.body("primaryTag", equalTo("POPULAR"));	
 
-		// test the wrong id
-		when().get("/items/" + UUID.randomUUID()).then().log().all()
-			.statusCode(404);
-	}
+			// test the wrong id
+			when().get("/items/" + UUID.randomUUID()).then().log().all()
+				.statusCode(404);
+		}
 
-	@Test
-	void whenGetAllByPrimaryTag(){
-		// two times for add data
-		createItemDto();
-		createItemDto();
+		@Test
+		void whenGetAllByPrimaryTag(){
+			// two times for add data
+			createItemDto();
+			createItemDto();
 
-		//different tag
-		itemRepository.save(Item.builder().primaryTag(ItemTag.NEW).name("test").build());
+			//different tag
+			itemRepository.save(Item.builder().primaryTag(ItemTag.NEW).name("test").build());
 
-		given().contentType(ContentType.JSON).queryParam("page", 0).queryParam("size", 10)
-			.when().get("/items/tag/" + ItemTag.POPULAR.toString()).then().statusCode(200)
-			.body("content", notNullValue())
-			.body("content.size()", equalTo(2))
-			.body("content[0].primaryTag", equalTo("POPULAR"));
+			given().contentType(ContentType.JSON)
+				.queryParam("page", 0).queryParam("size", 10).queryParam("primary_tag", ItemTag.POPULAR.toString())
+				.when().get("/items/search/tag").then().statusCode(200)
+				.body("content", notNullValue())
+				.body("content.size()", equalTo(2))
+				.body("content[0].primaryTag", equalTo("POPULAR"));
 
-		//test the wrong tag
-		given().contentType(ContentType.JSON).queryParam("page", 0).queryParam("size", 10)
-			.when().get("/items/tag/" + "unknown tag").then().statusCode(400);
-	}
+			//test the wrong tag
+			given().contentType(ContentType.JSON).queryParam("page", 0).queryParam("size", 10)
+				.when().get("/items/search/tag/" + "unknown tag").then().statusCode(404);
+		}
 
-	@Test
-	void whenGetAllRequestTest(){
-		Item itemRequest = itemRepository.save(
-			Item.builder().primaryTag(ItemTag.POPULAR).name("test").build()
-		);	
+		@Test
+		void whenGetAllByDescription(){
 
-		given().contentType(ContentType.JSON).queryParam("page", 0).queryParam("size", 10)
-			.when().get("/items").then().statusCode(200)
-			.body("content", notNullValue())
-			.body("content.size()",greaterThanOrEqualTo(0))
-			.body("content[0].name", equalTo(itemRequest.getName()))
-			.body("content[0].primaryTag", equalTo("POPULAR"));	
+			ItemDataTransferObject item4 = createItemDto();
+
+			for(int i = 0; i < 10; i++){
+				itemRepository.save(
+					Item.builder().description("for cooking"+i)
+					.name("test").build()
+				);
+			}
+
+			given().contentType(ContentType.JSON)
+				.queryParam("page", 0).queryParam("size", 11).queryParam("description", item4.getDescription())
+				.when().get("/items/search/desc").then().statusCode(200)
+				.body("content", notNullValue())
+				.body("content.size()", greaterThanOrEqualTo(0))
+				.body("content[0].description", equalTo("for cooking"));
+		}
+
+		@Test
+		void whenGetAllRequestTest(){
+			Item itemRequest = itemRepository.save(
+				Item.builder().primaryTag(ItemTag.POPULAR).name("test").build()
+			);	
+
+			given().contentType(ContentType.JSON).queryParam("page", 0).queryParam("size", 10)
+				.when().get("/items").then().statusCode(200)
+				.body("content", notNullValue())
+				.body("content.size()",greaterThanOrEqualTo(0))
+				.body("content[0].name", equalTo(itemRequest.getName()))
+				.body("content[0].primaryTag", equalTo("POPULAR"));	
+		}
 	}
 
 	@Nested
@@ -170,13 +195,13 @@ public class ItemControllerTest extends BaseIntegrationTest{
 		when().delete("/items/" + savedItem.getId()).then().statusCode(204);
 
 		assertThrows(NoSuchElementException.class, 
-			() -> itemService.findById(savedItem.getId())
+		() -> itemService.findById(savedItem.getId())
 		);
 	}
 
 	private ItemDataTransferObject createItemDto(){
 		return itemMapper.toDto(
-				itemRepository.save(Item.builder().primaryTag(ItemTag.POPULAR).name("test").build())
+			itemRepository.save(Item.builder().description("for cooking").primaryTag(ItemTag.POPULAR).name("test").build())
 		);	
 	}
 

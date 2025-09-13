@@ -39,6 +39,10 @@ public class ItemServiceImpl implements ItemService{
 		return itemRepository.findAllByPrimaryTag(primaryTag, pageable);
 	}
 
+	public Page<Item> findAllByDescription(String description, Pageable pageable){
+		return itemRepository.findAllByDescription(description, pageable);
+	}
+
 	public Item update (Item item, UUID id){
 		Item foundItem = findById(id);
 		boolean hasChanged = false;

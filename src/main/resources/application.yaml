@@ -27,5 +27,9 @@ spring:
         - classpath:/static/
       cache:
         period: 0
+  threads:
+    virtual:
+      enabled: true
+
 server: ${SERVER_PORT}
 

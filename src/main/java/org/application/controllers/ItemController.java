@@ -23,7 +23,6 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/items")
@@ -35,58 +34,68 @@ public class ItemController {
 	ItemMapper itemMapper;
 
 	@PostMapping
-	public Mono<ResponseEntity<ItemDataTransferObject>> save(@Valid @RequestBody ItemDataTransferObject itemDto){
-		return Mono.fromSupplier(() -> 
-			ResponseEntity.ok(
+	public ResponseEntity<ItemDataTransferObject> save(@Valid @RequestBody ItemDataTransferObject itemDto){
+		return ResponseEntity.ok(
 				itemMapper.toDto(itemService.save(itemMapper.toEntity(itemDto)))
-			)
 		);
+		
 	}
 
 	@GetMapping("/{id}")
-	public Mono<ResponseEntity<ItemDataTransferObject>> findById(@PathVariable("id") UUID id){
-		return Mono.fromSupplier(() -> ResponseEntity.ok(itemMapper.toDto(itemService.findById(id))));
+	public ResponseEntity<ItemDataTransferObject> findById(@PathVariable("id") UUID id){
+		return ResponseEntity.ok(itemMapper.toDto(itemService.findById(id)));
 	}
 
-	@GetMapping("/tag/{primary_tag}")
-	public Mono<ResponseEntity<Page<ItemDataTransferObject>>> findAllByPrimaryTag(
-		@PathVariable("primary_tag") String primary_tag,
+	@GetMapping("/search/tag")
+	public ResponseEntity<Page<ItemDataTransferObject>> findAllByPrimaryTag(
+		@Valid @RequestParam(value = "primary_tag", required = true) String primary_tag,
 		@RequestParam(value = "page", defaultValue = "0") int page,
 		@RequestParam(value = "size", defaultValue = "10") int size
 	){
-		return Mono.fromSupplier(() -> ResponseEntity.ok(
-				itemService.findAllByPrimaryTag(
-					ItemTag.fromString(primary_tag), PageRequest.of(page, size)
-				).map(itemMapper::toDto)
-			)
+		return ResponseEntity.ok(
+			itemService.findAllByPrimaryTag(
+				ItemTag.fromString(primary_tag), PageRequest.of(page, size)
+			).map(itemMapper::toDto)
+		);
+		
+	}
+
+	@GetMapping("/search/desc")
+	public ResponseEntity<Page<ItemDataTransferObject>> findAllByDescription(
+		@Valid @RequestParam(value = "description", required = true) String description,
+		@RequestParam(value = "page", defaultValue = "0") int page,
+		@RequestParam(value = "size", defaultValue = "10") int size
+	){
+		return ResponseEntity.ok(
+			itemService.findAllByDescription(description, PageRequest.of(page, size)).map(itemMapper::toDto)
 		);
 	}
 
 	@GetMapping
-	public Mono<ResponseEntity<Page<ItemDataTransferObject>>> getAll(
+	public ResponseEntity<Page<ItemDataTransferObject>> getAll(
 		@RequestParam(value = "page", defaultValue = "0") int page,
 		@RequestParam(value = "size", defaultValue = "10") int size
 	){
-		return Mono.fromSupplier(() -> ResponseEntity.ok(
+		return ResponseEntity.ok(
 			itemService.getAll(PageRequest.of(page, size)).map(itemMapper::toDto)
-		));
+		);
 	}
 
 	@PutMapping("/{id}")
-	public Mono<ResponseEntity<ItemDataTransferObject>> update(@Valid @RequestBody ItemDataTransferObject itemDto, @PathVariable("id") UUID id){
-		return Mono.fromSupplier(() -> ResponseEntity.ok(
+	public ResponseEntity<ItemDataTransferObject> update(@Valid @RequestBody ItemDataTransferObject itemDto, @PathVariable("id") UUID id){
+		return ResponseEntity.ok(
 			itemMapper.toDto(
 				itemService.update(
 					itemMapper.toEntity(itemDto), id
 				)
 			)
-		));
+		);
 	}
 
 	@DeleteMapping("/{id}")
-	public Mono<ResponseEntity<Void>> delete(@PathVariable("id") UUID id){
+	public ResponseEntity<Void> delete(@PathVariable("id") UUID id){
 		itemService.delete(id);
-		return Mono.fromSupplier(() ->ResponseEntity.noContent().build()); //204 
+		return ResponseEntity.noContent().build(); //204 
 	}
 
 }
