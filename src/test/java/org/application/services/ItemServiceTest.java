@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.*;
 
+import org.application.criteria.ItemSearchCriteria;
 import org.application.entity.Item;
 import org.application.enums.ItemTag;
 import org.application.repositories.ItemRepository;
@@ -70,6 +71,19 @@ public class ItemServiceTest {
 		item.setId(uuid);
 		when(itemRepository.findById(uuid)).thenReturn(Optional.of(item));
 		assertEquals(item, itemService.findById(uuid));
+	}
+
+	@Test
+	void searchTest(){
+		var itemsr = ItemSearchCriteria.builder().description("default").primaryTag(ItemTag.NEW.toString())
+			.size(10).page(0).build();
+		var item = Item.builder().name("test").description("default").primaryTag(ItemTag.NEW).build();
+
+		Pageable pageable = PageRequest.of(itemsr.getPage(), itemsr.getSize());
+		Page<Item> mockPage = new PageImpl<>(List.of(item), pageable, 1);
+
+		
+
 	}
 
 	@Test

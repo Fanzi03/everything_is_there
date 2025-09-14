@@ -71,4 +71,20 @@ public class ItemRepositoryTest extends BaseIntegrationTest{
 	}
 
 
+	@Test
+	void seachTest(){
+		item = Item.builder().primaryTag(ItemTag.POPULAR).name("test naem").description("maybe elastic search").build();	
+		item2 = Item.builder().primaryTag(ItemTag.POPULAR).name(item.getName()).description("cool day").build();
+
+		itemRepository.save(item);
+		itemRepository.save(item2);
+
+		Page<Item> result = itemRepository.search("search", ItemTag.POPULAR.toString(), PageRequest.of(0,10)); 
+
+		assertThat(result.getTotalElements()).isEqualTo(1);
+		assertThat("maybe elastic search").isEqualTo(result.getContent().getFirst().getDescription());
+		assertThat("POPULAR").isEqualTo(result.getContent().getFirst().getPrimaryTag().toString());
+	}
+
+
 }
