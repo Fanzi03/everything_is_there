@@ -32,7 +32,7 @@ public class ItemSearchCriteria {
 	}
 
 	public boolean hasPrimaryTag(){
-		return primaryTag != null && !primaryTag.trim().isEmpty();
+		return primaryTag != null;
 	}
 	
 }

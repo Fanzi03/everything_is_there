@@ -4,11 +4,13 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.application.criteria.ItemSearchCriteria;
 import org.application.entity.Item;
 import org.application.enums.ItemTag;
 import org.application.repositories.ItemRepository;
 import org.application.services.ItemService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +43,26 @@ public class ItemServiceImpl implements ItemService{
 
 	public Page<Item> findAllByDescription(String description, Pageable pageable){
 		return itemRepository.findAllByDescription(description, pageable);
+	}
+
+	public Page<Item> search(ItemSearchCriteria itemsr){
+		var pageable = PageRequest.of(itemsr.getPage(), itemsr.getSize());
+
+		if(!itemsr.hasPrimaryTag()){
+			if(itemsr.hasDescription()){
+				return findAllByDescription(itemsr.getDescription(), pageable);
+			}
+			throw new IllegalArgumentException("search without tag and description cannot being");
+		}
+		else{
+			var primaryTag = ItemTag.fromString(itemsr.getPrimaryTag()); 
+			if(itemsr.hasDescription()){
+				return itemRepository.search(itemsr.getDescription(), primaryTag,pageable);
+			}
+			return itemRepository.findAllByPrimaryTag(primaryTag, pageable);	
+		}
+
+
 	}
 
 	public Item update (Item item, UUID id){

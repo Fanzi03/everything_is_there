@@ -79,7 +79,7 @@ public class ItemRepositoryTest extends BaseIntegrationTest{
 		itemRepository.save(item);
 		itemRepository.save(item2);
 
-		Page<Item> result = itemRepository.search("search", ItemTag.POPULAR.toString(), PageRequest.of(0,10)); 
+		Page<Item> result = itemRepository.search("search", ItemTag.POPULAR, PageRequest.of(0,10)); 
 
 		assertThat(result.getTotalElements()).isEqualTo(1);
 		assertThat("maybe elastic search").isEqualTo(result.getContent().getFirst().getDescription());

@@ -15,7 +15,7 @@ public class ItemMapperImpl implements ItemMapper{
 		if(itemDto==null) return null;
 		return Item.builder()
 			.name(itemDto.getName())
-			.primaryTag(itemDto.getPrimaryTag() != null ? ItemTag.valueOf(itemDto.getPrimaryTag()) : null)
+			.primaryTag(itemDto.getPrimaryTag() != null ? ItemTag.fromString(itemDto.getPrimaryTag()) : null)
 			.tags(itemDto.getTags().stream().map(s -> ItemTag.fromString(s)).collect(Collectors.toSet()))
 			.description(itemDto.getDescription())
 			.build();	

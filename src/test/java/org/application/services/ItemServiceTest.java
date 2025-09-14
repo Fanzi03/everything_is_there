@@ -82,7 +82,42 @@ public class ItemServiceTest {
 		Pageable pageable = PageRequest.of(itemsr.getPage(), itemsr.getSize());
 		Page<Item> mockPage = new PageImpl<>(List.of(item), pageable, 1);
 
-		
+		when(itemRepository.search(
+			itemsr.getDescription(), ItemTag.fromString(itemsr.getPrimaryTag()), pageable)
+		).thenReturn(mockPage);
+
+		Page<Item> result = itemService.search(itemsr);
+
+		assertThat(1).isEqualTo(result.getTotalElements());
+		assertThat("NEW").isEqualTo(result.getContent().getFirst().getPrimaryTag().toString());
+		assertThat("default").isEqualTo(result.getContent().getFirst().getDescription().toString());
+
+		//only description
+		var itemsCB = ItemSearchCriteria.builder()
+			.description("default")	
+			.build();
+		when(itemRepository.findAllByDescription(itemsCB.getDescription(), pageable)).thenReturn(mockPage);
+
+		Page<Item> descriptionResult = itemService.search(itemsCB);
+
+		assertThat(1).isEqualTo(descriptionResult.getTotalElements());
+		assertThat("default").isEqualTo(descriptionResult.getContent().getFirst().getDescription().toString());
+
+		//only primaryTag
+		var itemsCP = ItemSearchCriteria.builder()
+			.primaryTag(ItemTag.NEW.toString())
+			.build();
+		when(itemRepository.findAllByPrimaryTag(ItemTag.fromString(itemsCP.getPrimaryTag()), pageable)).thenReturn(mockPage);
+
+		Page<Item> primaryTagResult = itemService.search(itemsCP);
+
+		assertThat(1).isEqualTo(primaryTagResult.getTotalElements());
+		assertThat("NEW").isEqualTo(primaryTagResult.getContent().getFirst().getPrimaryTag().toString());
+
+		//bad result
+		var itemsCBad = ItemSearchCriteria.builder()
+			.build();
+		assertThrows(IllegalArgumentException.class, () -> itemService.search(itemsCBad));
 
 	}
 
